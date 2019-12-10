@@ -2,6 +2,8 @@
 
 Simple application to enrol a personal X.509 certificate in modern browsers (lacking support for the keygen element).
 
+_Please note:_ this is currently beta-software. 
+
 # Motivation
 
 To obtain a personal X.509 certificate you need to generate a public/private key pair, and submit the public key to a Certification Authority (CA).
