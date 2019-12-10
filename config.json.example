@@ -1,0 +1,23 @@
+{
+  "api": {
+    "order_uri":    "https://www.digicert.com/services/v2/order/certificate/client_premium_sha2",
+    "download_uri": "https://www.digicert.com/services/v2/certificate/",
+    "key": "INSERTYOURKEYHERE"
+    },
+  "request_template": {
+    "certificate": {
+      "common_name": "",
+      "emails": [],
+      "signature_hash": "sha256",
+      "csr": ""
+    },
+    "skip_approval": true,
+    "organization": {
+      "id": 112233
+    },
+    "container": {
+      "id": 445566
+    },
+    "validity_years": 1
+  }
+}
