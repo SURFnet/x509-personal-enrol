@@ -49,7 +49,9 @@ Users need to authenticate
 
 # Known Issues
 
-TO DO
+- Only works with Digicert API.
+- code is specific to OpenID Connect, using SAML requires (minimal) code changes.
+- You may need support from Digicert to disable a superfluous email validation step.
 
 ## Credits
 
