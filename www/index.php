@@ -119,7 +119,7 @@ button:hover {
       </div>
     </div>
   </div>
-  <div class="tab">Your certificate request has been submitted. You will receive a validation email. Your certificate ID is:
+  <div class="tab">Your certificate request has been submitted. Your certificate ID is:
     <p><input name="certificate_id" id="certificate_id"></p>
     <div style="overflow:auto;">
       <div style="float:right;">
@@ -264,7 +264,7 @@ function postOrder() {
           certificate_id = response.certificate_id;
           document.getElementById("certificate_id").value = certificate_id;
           nextTab();
-          log(`Certificate order with ID ${certificate_id} succesfully submitted. Check your mail for a link to the Certificate Validation page.`);
+          log(`Certificate order with ID ${certificate_id} succesfully submitted.`);
         } else {
           log(`Certificate order failed`);
         }
@@ -342,7 +342,7 @@ function getCertificate() {
 
 window.addEventListener('load', function() {
   generateCSR();
-  log('generated new keys for your certificate');
+  log('Succesfully generated new keys for your certificate');
 });
 
 </script>
