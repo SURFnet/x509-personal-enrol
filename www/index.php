@@ -13,7 +13,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z -]*$/",
 <!-- Add icon library -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <!-- Add pki library -->
-<script src="https://cdn.jsdelivr.net/npm/node-forge@0.7.0/dist/forge.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-forge@0.7.0/dist/forge.min.js" integrity="sha384-sgzMi6V7PVuBrH3D+OTG6gR4GjgQCsSSUYFcGoGCNr5ks7Sr3WrS+zNv5H33fTY5" crossorigin="anonymous"></script>
 <style>
 * {
   box-sizing: border-box;
@@ -123,11 +123,11 @@ button:hover {
     <p><input name="certificate_id" id="certificate_id"></p>
     <div style="overflow:auto;">
       <div style="float:right;">
-        <button type="button" onclick="getCertificate()">Next: check for certificate</button>
+        <button type="button" onclick="getCertificate()">Next: retrieve new certificate</button>
       </div>
     </div>
   </div>
-  <div class="tab">Install certificate:
+  <div class="tab">Download your certificate. To install, open the certificate.p12 file from your Download folder and enter the password below:
     <p><input name="password" id="password" type="text" size="50" readonly><i class="fa fa-clipboard fa-2x" onclick="copyPasswordToClipboard()"></i></p>
     <div style="overflow:auto;">
       <div style="float:right;">
