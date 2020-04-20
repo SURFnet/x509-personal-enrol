@@ -1,11 +1,14 @@
 <?php
 // TODO: use the userinfo endpoint using an access token instead of relying on server environment
 //       to avoid issues with redirects when authentication has expired (eg CORS policy violations)
-$cn = ($_SERVER['OIDC_CLAIM_name']);
-$email = ($_SERVER['OIDC_CLAIM_email']);
+$cn = ($_SERVER['OIDC_CLAIM_name']) or $cn = getenv('OIDC_CLAIM_name');
+$email = $_SERVER['OIDC_CLAIM_email'] or $email = getenv('OIDC_CLAIM_email');
+
 # these assertions are enforced by apache auth_openid
-assert($_SERVER['OIDC_CLAIM_schac_home_organization'] == 'surfnet.nl');
-assert($_SERVER['OIDC_CLAIM_eduperson_entitlement'] == 'urn:mace:terena.org:tcs:personal-user');
+assert($_SERVER['OIDC_CLAIM_schac_home_organization'] == 'surfnet.nl'
+      or getenv('OIDC_CLAIM_schac_home_organization') ==  'surfnet.nl');
+assert($_SERVER['OIDC_CLAIM_eduperson_entitlement'] == 'urn:mace:terena.org:tcs:personal-user' or
+         getenv('OIDC_CLAIM_eduperson_entitlement') ==  'urn:mace:terena.org:tcs:personal-user');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z- ]*$/",$cn)) {
   error_log("ERROR: invalid cn ('$cn') and email ('$email')");
   header("HTTP/1.1 500 Internal Server Error");
