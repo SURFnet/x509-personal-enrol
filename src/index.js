@@ -93,11 +93,14 @@ function generatePassword(size) {
 }
 
 function generateCSR() {
-    keys = pki.rsa.generateKeyPair(2048);
-    csr = pki.createCertificationRequest();
-    csr.publicKey = keys.publicKey;
-    csr.sign(keys.privateKey, md.sha256.create());
-    csr = pki.certificationRequestToPem(csr);
+    keys = null;
+    pki.rsa.generateKeyPair( {bits: 2048, workers: 2}, function(err, keypair) {
+      keys = keypair;
+      csr = pki.createCertificationRequest();
+      csr.publicKey = keys.publicKey;
+      csr.sign(keys.privateKey, md.sha256.create());
+      csr = pki.certificationRequestToPem(csr);
+    });
 }
 
 function postOrder() {
