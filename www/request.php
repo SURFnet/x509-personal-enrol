@@ -5,6 +5,9 @@ $cn = ($_SERVER['OIDC_CLAIM_name']) or $cn = getenv('OIDC_CLAIM_name');
 $email = $_SERVER['OIDC_CLAIM_email'] or $email = getenv('OIDC_CLAIM_email');
 
 # these assertions are enforced by apache auth_openid
+# Note:
+# - schac_home_organization restricts claims originating from a specific provider
+# - eduperson_entitlement restricts claims from specific users
 assert($_SERVER['OIDC_CLAIM_schac_home_organization'] == 'surfnet.nl'
       or getenv('OIDC_CLAIM_schac_home_organization') ==  'surfnet.nl');
 assert($_SERVER['OIDC_CLAIM_eduperson_entitlement'] == 'urn:mace:terena.org:tcs:personal-user' or
@@ -16,7 +19,8 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z- ]*$/",
 }
 
 $csr = $_POST['csr'];
-assert(openssl_csr_get_subject($csr) == []);  // check CSR can be parsed
+assert(openssl_csr_get_subject($csr) == []);  // check CSR can be parsed. 
+// Note that the subject DN should be empty as it is derived from claims
 
 $config = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);
 

@@ -1,0 +1,31 @@
+{
+  "name": "x509-personal-enrol",
+  "version": "1.0.0",
+  "description": "Simple application to enrol a personal X.509 certificate in modern browsers (lacking support for the keygen element).",
+  "private": "true",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SURFnet/x509-personal-enrol.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SURFnet/x509-personal-enrol/issues"
+  },
+  "homepage": "https://github.com/SURFnet/x509-personal-enrol#readme",
+  "devDependencies": {
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "node-forge": "^0.9.1"
+  }
+}
