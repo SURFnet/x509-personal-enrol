@@ -2,8 +2,12 @@
 
 $cn = ($_SERVER['OIDC_CLAIM_name']) or $cn = getenv('OIDC_CLAIM_name');
 $email = $_SERVER['OIDC_CLAIM_email'] or $email = getenv('OIDC_CLAIM_email');
-if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z -]+$/",$cn)) {
-  echo "ERROR: we could not determine your name (received '$cn') and email address (received '$email') . Please contact your helpdesk.";
+if (!preg_match("/^[a-zA-Z -]+$/",$cn)) {
+  echo "ERROR: we could not determine your name (received '<code>" . htmlspecialchars($cn) . "</code>'). Please contact your helpdesk.";
+  exit();
+}
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z0-9 +-.@]+$/",$email)) {
+  echo "ERROR: we could not determine your email address (received '<code>" . htmlspecialchars($email) . "</code>'). Please contact your helpdesk.";
   exit();
 }
 
