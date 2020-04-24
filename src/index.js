@@ -76,7 +76,7 @@ function baseURL() {
 
 function log(msg) {
     var m = document.getElementById("message");
-    m.innerHTML = msg;
+    m.innerHTML = escape(msg);
 }
 
 function copyPasswordToClipboard() {
@@ -157,7 +157,7 @@ function getCertificate() {
             try {
                 var response = JSON.parse(request.response);
                 if (response.errors) {
-                    document.getElementById('message').innerHTML = response.errors[0].message;
+                    log(response.errors[0].message);
                 }
             } catch (e) { // No JSON, no error
                 var pem = request.response;
