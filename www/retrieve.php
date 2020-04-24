@@ -1,5 +1,12 @@
 <?php
-//error_log(print_r($_POST, true));
+session_start();
+
+if (empty($_POST['csrftoken']) or empty($_SESSION['csrftoken']) or $_SESSION['csrftoken'] !== $_POST['csrftoken']) {
+  error_log("ERROR: csrf token mismatch");
+  http_response_code(400);
+  exit();
+}
+
 $certificate_id = $_POST['certificate_id'];
 
 $config = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);

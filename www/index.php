@@ -10,12 +10,18 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z0-9 +-.@
   echo "ERROR: we could not determine your email address (received '<code>" . htmlspecialchars($email) . "</code>'). Please contact your helpdesk.";
   exit();
 }
-
+# anti csrf token, assume php7
+session_start();
+if (empty($_SESSION['csrftoken'])) {
+    $_SESSION['csrftoken'] = bin2hex(random_bytes(32));
+}
+$csrftoken = $_SESSION['csrftoken'];
 ?>
 <!doctype html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrftoken" content="<?php echo $csrftoken; ?>">
 <!-- Add icon library -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="style.css">
@@ -35,7 +41,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z0-9 +-.@
     </div>
   </div>
   <div class="tab">Your certificate request has been submitted. Your certificate ID is:
-    <p><input name="certificate_id" id="certificate_id"></p>
+    <p><input name="certificate_id" id="certificate_id" type="text" readonly></p>
     <div style="overflow:auto;">
       <div style="float:right;">
         <button type="button" id="getCertificate">Next: retrieve new certificate</button>

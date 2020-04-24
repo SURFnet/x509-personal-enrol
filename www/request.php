@@ -23,6 +23,13 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z0-9 +-.@
   exit();
 }
 
+session_start();
+if (empty($_POST['csrftoken']) or empty($_SESSION['csrftoken']) or $_SESSION['csrftoken'] !== $_POST['csrftoken']) {
+  error_log("ERROR: csrf token mismatch");
+  http_response_code(400);
+  exit();
+}
+
 $csr = $_POST['csr'];
 assert(openssl_csr_get_subject($csr) == []);  // check CSR can be parsed. 
 // Note that the subject DN should be empty as it is derived from claims

@@ -107,7 +107,8 @@ function postOrder() {
   var request = new XMLHttpRequest();
   // var url = "https://digicert.aai.surfnet.nl/new/request.php";
   var url = baseURL() + "/request.php";
-  var params = `csr=${encodeURIComponent(csr)}`;
+  var token = document.querySelector("meta[name='csrftoken']").getAttribute("content");
+  var params = `csr=${encodeURIComponent(csr)}&csrftoken=${token}`;
 
   request.open('POST', url, true);
   request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
