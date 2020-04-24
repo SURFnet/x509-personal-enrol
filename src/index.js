@@ -76,7 +76,7 @@ function baseURL() {
 
 function log(msg) {
     var m = document.getElementById("message");
-    m.innerHTML = escape(msg);
+    m.textContent = msg;
 }
 
 function copyPasswordToClipboard() {
