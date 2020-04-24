@@ -12,8 +12,13 @@ assert($_SERVER['OIDC_CLAIM_schac_home_organization'] == 'surfnet.nl'
       or getenv('OIDC_CLAIM_schac_home_organization') ==  'surfnet.nl');
 assert($_SERVER['OIDC_CLAIM_eduperson_entitlement'] == 'urn:mace:terena.org:tcs:personal-user' or
          getenv('OIDC_CLAIM_eduperson_entitlement') ==  'urn:mace:terena.org:tcs:personal-user');
-if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z- ]*$/",$cn)) {
-  error_log("ERROR: invalid cn ('$cn') and email ('$email')");
+if (!preg_match("/^[a-zA-Z -]+$/",$cn)) {
+  error_log("ERROR: invalid cn ('$cn')");
+  header("HTTP/1.1 500 Internal Server Error");
+  exit();
+}
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z0-9 +-.@]+$/",$email)) {
+  error_log("ERROR: invalid email ('$email')");
   header("HTTP/1.1 500 Internal Server Error");
   exit();
 }
