@@ -70,7 +70,37 @@ In the `request_template` section, fill in your `organization.id` and the `conta
 
 ## User authentication
 
-Users need to authenticate using an OpenID Connect Provider.
+Users need to authenticate using an OpenID Connect Provider. 
+
+### Apache configuration
+
+To configure an OpenID Connect Relying Party using `mod_auth_openidc`, enable this module (`a2enmod auth_openidc`) and add appropriate directives to your virtual host configuration.
+
+For instance:
+
+```
+OIDCProviderMetadataURL https://<your.OP.tld>/.well-known/openid-configuration
+
+OIDCClientID <your cliend ID>
+OIDCClientSecret <your client secret>
+
+OIDCRedirectURI https://your.domain.tld/redirect_uri
+OIDCCryptoPassphrase <random passphrase>
+
+OIDCScope "openid email profile"
+
+<Location />
+   AuthType openid-connect
+   Require valid-user
+   <RequireAll>
+      Require claim schac_home_organization:<your.domain.tld>
+      Require claim "eduperson_entitlement~urn:mace:terena.org:tcs:personal-user"
+   </RequireAll>   
+</Location>
+```
+
+With a few easy changes it is also possible to use a SAML 2.0 Identity Provider, 
+for instance using the Apache `mod_shib` module from [Shibboleth SP](https://www.shibboleth.net/products/service-provider/).
 
 ## Known Issues
 
