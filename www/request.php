@@ -8,10 +8,20 @@ $email = $_SERVER['OIDC_CLAIM_email'] or $email = getenv('OIDC_CLAIM_email');
 # Note:
 # - schac_home_organization restricts claims originating from a specific provider
 # - eduperson_entitlement restricts claims from specific users
-assert($_SERVER['OIDC_CLAIM_schac_home_organization'] == 'surfnet.nl'
-      or getenv('OIDC_CLAIM_schac_home_organization') ==  'surfnet.nl');
-assert($_SERVER['OIDC_CLAIM_eduperson_entitlement'] == 'urn:mace:terena.org:tcs:personal-user' or
-         getenv('OIDC_CLAIM_eduperson_entitlement') ==  'urn:mace:terena.org:tcs:personal-user');
+if($_SERVER['OIDC_CLAIM_schac_home_organization'] !== 'surfnet.nl'
+      and getenv('OIDC_CLAIM_schac_home_organization') !==  'surfnet.nl') {
+  error_log("ERROR: invalid organization");
+  http_response_code(400);
+  exit();
+}
+
+if($_SERVER['OIDC_CLAIM_eduperson_entitlement'] !== 'urn:mace:terena.org:tcs:personal-user' and
+         getenv('OIDC_CLAIM_eduperson_entitlement') !==  'urn:mace:terena.org:tcs:personal-user') {
+  error_log("ERROR: missing entitlement");
+  http_response_code(400);
+  exit();
+}
+
 if (!preg_match("/^[a-zA-Z -]+$/",$cn)) {
   error_log("ERROR: invalid cn ('$cn')");
   header("HTTP/1.1 500 Internal Server Error");
@@ -31,8 +41,12 @@ if (empty($_POST['csrftoken']) or empty($_SESSION['csrftoken']) or $_SESSION['cs
 }
 
 $csr = $_POST['csr'];
-assert(openssl_csr_get_subject($csr) == []);  // check CSR can be parsed. 
-// Note that the subject DN should be empty as it is derived from claims
+// check that the CSR can be parsed and that the subject DN is empty (it is completely derived from claims)
+if(openssl_csr_get_subject($csr) !== []) {
+  error_log("ERROR: invalid CSR or CSR subject DN not empty");
+  http_response_code(400);
+  exit();
+}
 
 $config = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);
 

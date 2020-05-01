@@ -22,7 +22,6 @@ $csrftoken = $_SESSION['csrftoken'];
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrftoken" content="<?php echo $csrftoken; ?>">
-<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -47,7 +46,7 @@ $csrftoken = $_SESSION['csrftoken'];
     </div>
   </div>
   <div class="tab">Download your certificate. To install, open the certificate.p12 file from your Download folder and enter the password below:
-    <p><input name="password" id="password" type="text" size="50" readonly><i class="fa fa-copy fa-2x" id="copyPasswordToClipboard"></i></p>
+    <p><input name="password" id="password" type="text" size="50" readonly><span id="copyPasswordToClipboard"><i class="fa fa-copy fa-2x"></i></span></p>
     <div style="overflow:auto;">
       <div style="float:right;">
       <a id="p12link" class="button" href="#" rel="noopener" download="certificate.p12"><button type="button" class="btn"><i class="fa fa-download"></i> Download .p12</button></a>
