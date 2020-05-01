@@ -1,4 +1,14 @@
 import { random, util, pki, md, pkcs7, pkcs12, asn1 } from 'node-forge';
+import './style.css';
+import { library, dom } from "@fortawesome/fontawesome-svg-core";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
+import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
+
+library.add(faCheck);
+library.add(faCopy);
+library.add(faDownload);
+dom.watch();
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the current tab
