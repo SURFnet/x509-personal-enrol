@@ -147,8 +147,8 @@ function getCertificate() {
     var request = new XMLHttpRequest();
     // var url = "https://digicert.aai.surfnet.nl/new/retrieve.php";
     var url = baseURL() + "/retrieve.php";
-    var params = `certificate_id=${certificate_id}`;
-
+    var token = document.querySelector("meta[name='csrftoken']").getAttribute("content");
+    var params = `certificate_id=${certificate_id}&csrftoken=${token}`;  
     request.open('POST', url, true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.onreadystatechange = function() {
