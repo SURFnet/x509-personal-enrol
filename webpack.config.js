@@ -7,17 +7,6 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'www'),
   },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-        ],
-      },
-    ],
-  },
   optimization: {
     minimize: false
   }

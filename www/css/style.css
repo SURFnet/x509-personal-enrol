@@ -37,6 +37,16 @@ input.invalid {
   display: none;
 }
 
+/* nav */
+.nav {
+  overflow:auto;
+}
+
+/* buttons */
+.buttons {
+  float:right;
+}
+
 button {
   background-color: #4CAF50;
   color: #ffffff;
@@ -53,6 +63,12 @@ button:hover {
 
 #prevBtn {
   background-color: #bbbbbb;
+}
+
+/* steps */
+.steps {
+  text-align:center;
+  margin-top:40px;
 }
 
 /* Make circles that indicate the steps of the form: */
