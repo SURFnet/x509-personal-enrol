@@ -67,10 +67,16 @@ $opts = array('http' =>
   )
 );
 
-$context  = stream_context_create($opts);
+$context = stream_context_create($opts);
 $url = $config['api']['order_uri'];
-$result = file_get_contents($url, false, $context);
+$result = @file_get_contents($url, false, $context);
 // { "id": 13274378, "certificate_id": 14009458 }
+if( $result === FALSE ) {
+  http_response_code(400);
+  echo '{ "error":"order failed"}';
+  error_log('ERROR: order failed for certificate request ' . json_encode($content));
+  exit();
+}
 
 $data = json_decode($result, true);
 echo json_encode($data, JSON_PRETTY_PRINT);

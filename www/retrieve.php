@@ -22,8 +22,16 @@ $opts = array('http' =>
   )
 );
 $context  = stream_context_create($opts);
-$result = file_get_contents($url, false, $context);
+$result = @file_get_contents($url, false, $context);
 // error_log(print_r($http_response_header, true));
+
+if( $result === FALSE ) {
+  http_response_code(400);
+  echo '{ "error":"order failed"}';
+  error_log('ERROR: order failed for certificate request ' . json_encode($content));
+  exit();
+}
+
 echo $result;
 
 // $result is either a JSON error message or a PKCS7 data structure
