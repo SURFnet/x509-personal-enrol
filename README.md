@@ -2,9 +2,9 @@
 
 Simple application to enrol a personal X.509 certificate in modern browsers (lacking support for the keygen element).
 
-_Please note:_ this is currently beta-software. 
+_Please note:_ this is currently beta-software.
 
-# Motivation
+## Motivation
 
 To obtain a personal X.509 certificate you need to generate a public/private key pair, and submit the public key to a Certification Authority (CA).
 Such a key pair can be generated in your browser using the HTML [KEYGEN element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen).
@@ -21,12 +21,12 @@ support the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/We
 This allows for a JavaScript implementation of a "wizzard" for generating key pairs, CSRs,
 and combining the resulting certificate received from the CA into a PKCS#12 file for download and subsequent install on a user's platform.
 
-# CA backend
+## CA backend
 
 This implementation currently only supports DigiCert as backend Certification Authority using their [services API](https://dev.digicert.com/services-api/).
 To be able to use this API, you need to [obtain an API key from Digicert's CertCentral portal](https://www.digicert.com/secure/automation/api-keys/).
 
-# Install
+## Install
 
 - Install Apache web server with `mod_ssl` and the default-ssl vhost, using a proper server certificate
 - Also install `mod_php` and `mod_auth_openidc`
@@ -35,21 +35,74 @@ To be able to use this API, you need to [obtain an API key from Digicert's CertC
 
 Instead of OpenID Connect, you can also use SAML by replacing `mod_auth_openidc` with `mood_shib` from [Shibboleth](https://wiki.shibboleth.net/confluence/display/CONCEPT/Home).
 
+### Building bundle
 
-# Configuration
+To build the `www/main.js` file:
+
+    npm install
+    npm run build
+
+### Debugging
+
+For debugging, it helps to generate a source-map so you can locate code in the original source files instead of the bundle.
+To create the source map:
+
+    npx webpack --mode=development --devtool source-map 
+
+### running locally
+
+To run locally using PHP's builtin web server, and without the need to set up an OpenID Connect Provider, provide the required claims using environment variables:
+
+    OIDC_CLAIM_email="jd@example.edu" \
+    OIDC_CLAIM_name="John Doe" \
+    OIDC_CLAIM_schac_home_organization=surfnet.nl \
+    OIDC_CLAIM_eduperson_entitlement=urn:mace:terena.org:tcs:personal-user \
+    php -S 0:8080 -t www
+
+## Configuration
 
 Use the example configuration to specify options needed for obtaining certificates:
 
     cp config.json.example config.json
-    
+
 Obtain an API key for your Digicert CertCentral account and configure it in the `api` section at entry `key`.
 In the `request_template` section, fill in your `organization.id` and the `container.id`.
 
-# User authentication
+## User authentication
 
-Users need to authenticate
+Users need to authenticate using an OpenID Connect Provider. 
 
-# Known Issues
+### Apache configuration
+
+To configure an OpenID Connect Relying Party using `mod_auth_openidc`, enable this module (`a2enmod auth_openidc`) and add appropriate directives to your virtual host configuration.
+
+For instance:
+
+```
+OIDCProviderMetadataURL https://<your.OP.tld>/.well-known/openid-configuration
+
+OIDCClientID <your cliend ID>
+OIDCClientSecret <your client secret>
+
+OIDCRedirectURI https://your.domain.tld/redirect_uri
+OIDCCryptoPassphrase <random passphrase>
+
+OIDCScope "openid email profile"
+
+<Location />
+   AuthType openid-connect
+   Require valid-user
+   <RequireAll>
+      Require claim schac_home_organization:<your.domain.tld>
+      Require claim "eduperson_entitlement~urn:mace:terena.org:tcs:personal-user"
+   </RequireAll>   
+</Location>
+```
+
+With a few easy changes it is also possible to use a SAML 2.0 Identity Provider, 
+for instance using the Apache `mod_shib` module from [Shibboleth SP](https://www.shibboleth.net/products/service-provider/).
+
+## Known Issues
 
 - Although easy to adapt to different settings, currently this code is specific to:
   - the Digicert CA (using their propriatary API)
@@ -57,12 +110,12 @@ Users need to authenticate
   - OpenID Connect (using SAML requires some small code changes)
 - You may need support from Digicert to disable a superfluous email validation step.
 
-## TO DO
+### TO DO
 
 - Provide documentation for using SAML instead of OIDC.
 - Use the userinfo endpoint using an access token instead of relying on server environment
 
-## Credits
+### Credits
 
 - Thanks to [Digital Bazaar](https://digitalbazaar.com) for their PKCS#12 implementation in [forge](https://github.com/digitalbazaar/forge)
 - Thanks to [Zmartzone](https://www.zmartzone.eu) for their OpenID Connect implementation for Apache Web Server [mod_auth_openidc](https://github.com/zmartzone/mod_auth_openidc)
