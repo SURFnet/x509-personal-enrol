@@ -1,8 +1,9 @@
 <?php
 // TODO: use the userinfo endpoint using an access token instead of relying on server environment
 //       to avoid issues with redirects when authentication has expired (eg CORS policy violations)
-$cn = ($_SERVER['OIDC_CLAIM_name']) or $cn = getenv('OIDC_CLAIM_name');
 $email = $_SERVER['OIDC_CLAIM_email'] or $email = getenv('OIDC_CLAIM_email');
+$givenName = ($_SERVER['OIDC_CLAIM_given_name']) or $givenName = getenv('OIDC_CLAIM_given_name');
+$familyName = ($_SERVER['OIDC_CLAIM_family_name']) or $familyName = getenv('OIDC_CLAIM_family_name');
 
 # these assertions are enforced by apache auth_openid
 # Note:
@@ -22,8 +23,13 @@ if($_SERVER['OIDC_CLAIM_eduperson_entitlement'] !== 'urn:mace:terena.org:tcs:per
   exit();
 }
 
-if (!preg_match("/^[a-zA-Z -]+$/",$cn)) {
-  error_log("ERROR: invalid cn ('$cn')");
+if (!preg_match("/^[a-zA-Z -]+$/",$givenName)) {
+  error_log("ERROR: invalid givenName ('$givenName')");
+  header("HTTP/1.1 500 Internal Server Error");
+  exit();
+}
+if (!preg_match("/^[a-zA-Z -]+$/",$familyName)) {
+  error_log("ERROR: invalid familyName ('$familyName')");
   header("HTTP/1.1 500 Internal Server Error");
   exit();
 }
@@ -49,20 +55,31 @@ if(openssl_csr_get_subject($csr) !== []) {
 }
 
 $config = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);
+if( $config === NULL ) {
+  error_log("ERROR: cannot parse config file");
+  http_response_code(500);
+  exit();
+} // TODO retrieve, refactor.
 
-$content = $config['request_template'];
-$content['certificate']['common_name'] = $cn;
-$content['certificate']['emails'] = [ $email ];
-$content['certificate']['csr'] = $csr;
-$body = json_encode($content);
+$template = $config['enroll_template'];
+$template['firstName'] = $givenName;
+$template['lastName'] = $familyName;
+$template['email'] = $email;
+$template['csr'] = $csr;
+$body = json_encode($template);
+$uri = $config['api']['uri'];
+$login = $config['api']['login'];
 $key = $config['api']['key'];
 
 $opts = array('http' =>
   array(
     'method'  => 'POST',
-    'header'  => "Content-Type: application/json\r\n".
-      "X-DC-DEVKEY: $key\r\n",
-    'content' => $body,
+    'header'  => "Content-Type: application/json;charset=utf-8\r\n".
+      "Accept: application/json;charset=utf-8\r\n".
+      "customerUri: $uri\r\n".
+      "login: $login\r\n".
+      "password: $key\r\n",
+      'content' => $body,
     'timeout' => 60
   )
 );
@@ -70,14 +87,14 @@ $opts = array('http' =>
 $context = stream_context_create($opts);
 $url = $config['api']['order_uri'];
 $result = @file_get_contents($url, false, $context);
-// { "id": 13274378, "certificate_id": 14009458 }
+
 if( $result === FALSE ) {
   http_response_code(400);
   echo '{ "error":"order failed"}';
-  error_log('ERROR: order failed for certificate request ' . json_encode($content));
+  error_log('ERROR: order failed for certificate request ' . json_encode($template));
   exit();
 }
 
 $data = json_decode($result, true);
 echo json_encode($data, JSON_PRETTY_PRINT);
-error_log('INFO: completed certificate request ' . json_encode(array_merge($content, $data)));
+error_log('INFO: completed certificate request ' . json_encode(array_merge($template, $data)));

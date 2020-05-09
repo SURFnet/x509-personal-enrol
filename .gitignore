@@ -1,4 +1,6 @@
 node_modules
-config.json
+config.json*
 www/main.js
 www/main.js.map
+www/css/all.css
+www/webfonts/

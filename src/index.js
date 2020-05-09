@@ -66,7 +66,7 @@ function fixStepIndicator(n) {
 
 let keys = null;
 let csr = null;
-let certificate_id = null;
+let orderNumber = null;
 let certs = null;
 let password = null;
 
@@ -117,11 +117,11 @@ function postOrder() {
       if (request.status === 200) {
           console.log(request.response);
         var response = JSON.parse(request.response);
-        if (response.certificate_id) {
-          certificate_id = response.certificate_id;
-          document.getElementById("certificate_id").value = certificate_id;
+        if (response.orderNumber) {
+          orderNumber = response.orderNumber;
+          document.getElementById("orderNumber").value = orderNumber;
           nextTab();
-          log(`Certificate order with ID ${certificate_id} succesfully submitted.`);
+          log(`Certificate order with ID ${orderNumber} succesfully submitted.`);
         } else {
           log(`Certificate order failed`);
         }
@@ -148,7 +148,7 @@ function getCertificate() {
     // var url = "https://digicert.aai.surfnet.nl/new/retrieve.php";
     var url = baseURL() + "/retrieve.php";
     var token = document.querySelector("meta[name='csrftoken']").getAttribute("content");
-    var params = `certificate_id=${certificate_id}&csrftoken=${token}`;  
+    var params = `orderNumber=${orderNumber}&csrftoken=${token}`;  
     request.open('POST', url, true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.onreadystatechange = function() {
@@ -188,7 +188,7 @@ function getCertificate() {
                   let bytes = bytesToTypedArray(p12Der)
                   link.href = typedArrayToURL(bytes, "application/x-pkcs12");
                   // destroy keys
-                  keys = csr = certificate_id = certs = password = null;
+                  keys = csr = orderNumber = certs = password = null;
                 }
             }
         }

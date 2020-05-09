@@ -2,14 +2,20 @@
 # uncomment unless set in server config
 # header("Content-Security-Policy: default-src 'self'");
 
-$cn = ($_SERVER['OIDC_CLAIM_name']) or $cn = getenv('OIDC_CLAIM_name');
+$givenName = ($_SERVER['OIDC_CLAIM_given_name']) or $givenName = getenv('OIDC_CLAIM_given_name');
+$familyName = ($_SERVER['OIDC_CLAIM_family_name']) or $familyName = getenv('OIDC_CLAIM_family_name');
 $email = $_SERVER['OIDC_CLAIM_email'] or $email = getenv('OIDC_CLAIM_email');
-if (!preg_match("/^[a-zA-Z -]+$/",$cn)) {
-  echo "ERROR: we could not determine your name (received '<code>" . htmlspecialchars($cn) . "</code>'). Please contact your helpdesk.";
+
+if (!preg_match("/^[a-zA-Z -]+$/",$givenName)) {
+  echo "ERROR: invalid givenName (received '<code>" . htmlspecialchars($givenName) . "</code>'). Please contact your helpdesk.";
+  exit();
+}
+if (!preg_match("/^[a-zA-Z -]+$/",$familyName)) {
+  echo "ERROR: invalid familyName (received '<code>" . htmlspecialchars($familyName) . "</code>'). Please contact your helpdesk.";
   exit();
 }
 if (!filter_var($email, FILTER_VALIDATE_EMAIL) or !preg_match("/^[a-zA-Z0-9 +-.@]+$/",$email)) {
-  echo "ERROR: we could not determine your email address (received '<code>" . htmlspecialchars($email) . "</code>'). Please contact your helpdesk.";
+  echo "ERROR: invalid email address (received '<code>" . htmlspecialchars($email) . "</code>'). Please contact your helpdesk.";
   exit();
 }
 # anti csrf token, assume php7
@@ -33,7 +39,7 @@ $csrftoken = $_SESSION['csrftoken'];
   <h1>Request a new Certificate:</h1>
   <!-- One "tab" for each step in the form: -->
   <div class="tab">You are requesting a new certificate with the following name and email address:
-    <p><input readonly value="<?php echo $cn; ?>"></p>
+    <p><input readonly value="<?php echo "$givenName $familyName"; ?>"></p>
     <p><input readonly value="<?php echo $email; ?>"></p>
     <div class="nav">
       <div class="buttons">
@@ -42,7 +48,7 @@ $csrftoken = $_SESSION['csrftoken'];
     </div>
   </div>
   <div class="tab">Your certificate request has been submitted. Your certificate ID is:
-    <p><input name="certificate_id" id="certificate_id" type="text" readonly></p>
+    <p><input name="orderNumber" id="orderNumber" type="text" readonly></p>
     <div class="nav">
       <div class="buttons">
         <button type="button" id="getCertificate">Next: retrieve new certificate</button>
