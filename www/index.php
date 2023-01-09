@@ -6,11 +6,11 @@ $givenName = ($_SERVER['OIDC_CLAIM_given_name']) or $givenName = getenv('OIDC_CL
 $familyName = ($_SERVER['OIDC_CLAIM_family_name']) or $familyName = getenv('OIDC_CLAIM_family_name');
 $email = $_SERVER['OIDC_CLAIM_email'] or $email = getenv('OIDC_CLAIM_email');
 
-if (!preg_match("/^[a-zA-Z -]+$/",$givenName)) {
+if (!preg_match("/^[a-zA-ZàâáçéèèêëìîíïôòóùûüÂÊÎÔúÛÄËÏÖÜÀÆæÇÉÈŒœÙñý'’, -]+$/",$givenName)) {
   echo "ERROR: invalid givenName (received '<code>" . htmlspecialchars($givenName) . "</code>'). Please contact your helpdesk.";
   exit();
 }
-if (!preg_match("/^[a-zA-Z -]+$/",$familyName)) {
+if (!preg_match("/^[a-zA-ZàâáçéèèêëìîíïôòóùûüÂÊÎÔúÛÄËÏÖÜÀÆæÇÉÈŒœÙñý'’, -]+$/",$familyName)) {
   echo "ERROR: invalid familyName (received '<code>" . htmlspecialchars($familyName) . "</code>'). Please contact your helpdesk.";
   exit();
 }
@@ -28,6 +28,7 @@ $csrftoken = $_SESSION['csrftoken'];
 <!doctype html>
 <html>
 <head>
+<title>Request certificate</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrftoken" content="<?php echo $csrftoken; ?>">
  <link href="css/style.css" rel="stylesheet">
@@ -37,6 +38,7 @@ $csrftoken = $_SESSION['csrftoken'];
 
 <div id="regForm">
   <h1>Request a new Certificate:</h1>
+  <div id="error" class="error"></div>
   <!-- One "tab" for each step in the form: -->
   <div class="tab">You are requesting a new certificate with the following name and email address:
     <p><input readonly value="<?php echo "$givenName $familyName"; ?>"></p>
@@ -60,7 +62,6 @@ $csrftoken = $_SESSION['csrftoken'];
     <div class="nav">
       <div class="buttons">
       <a id="p12link" class="button" href="#" rel="noopener" download="certificate.p12"><button type="button" class="btn"><i class="fas fa-download"></i> Download .p12</button></a>
-      <a class="button" href="https://x509test.aai.surfnet.nl/cgi-bin/env"><button type="button" class="btn">Optional: Test your certificate</button></a>
      </div>
     </div>
   </div>
