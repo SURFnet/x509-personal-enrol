@@ -79,6 +79,20 @@ function log(msg) {
     m.textContent = msg;
 }
 
+function hideError() {
+    document.getElementById("error").style.display = "none";
+}
+
+function showError() {
+    document.getElementById("error").style.display = "block";
+}
+
+function error(msg) {
+    var m =document.getElementById("error");
+    m.textContent = msg;
+    showError();
+}
+
 function copyPasswordToClipboard() {
   var copyText = document.getElementById("password");
   copyText.select();
@@ -105,11 +119,14 @@ function generateCSR() {
 
 function postOrder() {
   var request = new XMLHttpRequest();
-  // var url = "https://digicert.aai.surfnet.nl/new/request.php";
   var url = baseURL() + "/request.php";
   var token = document.querySelector("meta[name='csrftoken']").getAttribute("content");
   var params = `csr=${encodeURIComponent(csr)}&csrftoken=${token}`;
 
+  hideError();
+
+  document.getElementById("postOrder").disabled = true;
+  console.log('Clicked postOrder button');
   request.open('POST', url, true);
   request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   request.onreadystatechange = function() {
@@ -123,11 +140,12 @@ function postOrder() {
           nextTab();
           log(`Certificate order with ID ${orderNumber} succesfully submitted.`);
         } else {
-          log(`Certificate order failed`);
+          error(`Error: ${response.error}`);
         }
       } else {
-        log(`Certificate order failed (status ${request.status})`);
+        error(`Certificate order failed (status ${request.status})`);
       }
+      document.getElementById("postOrder").disabled = false;
     }
   };
   request.send(params);
@@ -145,10 +163,14 @@ function bytesToTypedArray(bytes) {
 
 function getCertificate() {
     var request = new XMLHttpRequest();
-    // var url = "https://digicert.aai.surfnet.nl/new/retrieve.php";
     var url = baseURL() + "/retrieve.php";
     var token = document.querySelector("meta[name='csrftoken']").getAttribute("content");
     var params = `orderNumber=${orderNumber}&csrftoken=${token}`;  
+
+    hideError();
+
+    document.getElementById("getCertificate").disabled = true;
+    console.log('Clicked getCertificate button');
     request.open('POST', url, true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.onreadystatechange = function() {
@@ -158,7 +180,7 @@ function getCertificate() {
             try {
                 var response = JSON.parse(request.response);
                 if (response.errors) {
-                    log(response.errors[0].message);
+                    error(`Error: ${response.error}`);
                 }
             } catch (e) { // No JSON, no error
                 var pem = request.response;
@@ -179,7 +201,7 @@ function getCertificate() {
                 var p12b64 = util.encode64(p12Der);
                 // check that end-entity-certificate public key matches generated key pair
                 if( JSON.stringify(keys.publicKey) != JSON.stringify(certs[0].publicKey) ) {
-                  log("ERROR: Generated RSA key does not match public key from certificate!");
+                  error("ERROR: Generated RSA key does not match public key from certificate!");
                 } else {
                   var subject = certs[0].subject.attributes.map( (e) => e.shortName+'='+e.value ).join("/");
                   log(`Retrieved certificate for ${subject}`);
@@ -191,7 +213,10 @@ function getCertificate() {
                   keys = csr = orderNumber = certs = password = null;
                 }
             }
+        } else {
+                error(`Certificate order failed (status ${request.status}) (Please visit the Wiki-page at https://edu.nl/whary)`);
         }
+        document.getElementById("getCertificate").disabled = false;
       }
     };
     request.send(params);
